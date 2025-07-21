@@ -1,24 +1,19 @@
 from pathlib import Path
+import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-SECRET_KEY = "django-insecure-f$y%%&0*cy3lzbl7q*0f%=fkwzwj(6g0dnp%*@l6#h3y%ayebv"
-
-DEBUG = True
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-f$y%%&0*cy3lzbl7q*0f%=fkwzwj(6g0dnp%*@l6#h3y%ayebv")
+DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '192.168.1.106',
-    '192.168.179.138',
-    '192.168.179.190',
-    'tekkala-8.onrender.com',  # ✅ دامنه Render رو اضافه کن
+    "localhost",
+    "127.0.0.1",
+    "192.168.1.106",
+    "192.168.179.138",
+    "192.168.179.190",
+    "tekkala-8.onrender.com",  # ✅ Render domain
 ]
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -27,15 +22,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    
-    "tekstore",  # اپلیکیشن tekstore را اضافه کردیم
-    "widget_tweaks",
-    "django.contrib.humanize",  # برای استفاده از intcomma
 
-    # اپلیکیشن‌های مورد نیاز برای احراز هویت دو مرحله‌ای
+    "tekstore",
+    "widget_tweaks",
+    "django.contrib.humanize",
+
     "django_otp",
     "django_otp.plugins.otp_static",
     "two_factor",
+
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -46,8 +42,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
-    # Middleware مربوط به otp (احراز هویت دو مرحله‌ای)
     "django_otp.middleware.OTPMiddleware",
 ]
 
@@ -56,7 +50,7 @@ ROOT_URLCONF = "tekkala.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'tekstore' / 'templates'],  # مسیر دقیق پوشه templates
+        "DIRS": [BASE_DIR / "tekstore" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -68,8 +62,11 @@ TEMPLATES = [
     },
 ]
 
+# برای اجرای با WSGI یا ASGI
 WSGI_APPLICATION = "tekkala.wsgi.application"
+ASGI_APPLICATION = "tekkala.asgi.application"  # ✅ برای channels
 
+# دیتابیس: SQLite یا Postgres بسته به محیط
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -78,18 +75,10 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 LANGUAGE_CODE = "en-us"
@@ -97,15 +86,18 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Channels: InMemory channel layer (برای تست)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
