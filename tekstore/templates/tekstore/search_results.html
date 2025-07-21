@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>نتایج جستجو</title>
+</head>
+<body>
+    <h1>نتایج جستجو برای: "{{ query }}"</h1>
+
+    {% if results %}
+        <ul>
+            {% for product in results %}
+                <li>
+                    <a href="{% url 'product_detail' product.pk %}">{{ product.title }}</a>
+                    - ${{ product.price }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>هیچ محصولی پیدا نشد.</p>
+    {% endif %}
+
+    <a href="{% url 'product_list' %}">بازگشت به لیست محصولات</a>
+</body>
+</html>

@@ -1,0 +1,269 @@
+{% extends "tekstore/base_generic.html" %}
+
+{% block title %}تسویه حساب | فروشگاه من{% endblock %}
+
+{% block content %}
+<style>
+  /* --- رنگ بندی طوسی و سفید مدرن --- */
+  :root {
+    --color-bg: #f7f7f7;
+    --color-white: #fff;
+    --color-dark: #2c2c2c;
+    --color-gray-light: #ddd;
+    --color-primary: #4a90e2;
+    --color-success: #27ae60;
+    --color-danger: #e74c3c;
+    --transition: 0.3s ease;
+    --border-radius: 8px;
+    --shadow: rgba(0,0,0,0.1);
+  }
+
+  /* کل صفحه */
+  .checkout-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: var(--color-white);
+    padding: 25px 40px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 6px 18px var(--shadow);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--color-dark);
+  }
+
+  /* نوار مراحل */
+  .progressbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    counter-reset: step;
+  }
+  .progressbar li {
+    list-style-type: none;
+    width: 33.33%;
+    position: relative;
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-gray-light);
+    cursor: pointer;
+    transition: color var(--transition);
+  }
+  .progressbar li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    border: 2px solid var(--color-gray-light);
+    display: block;
+    text-align: center;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: var(--color-white);
+    transition: background-color var(--transition), border-color var(--transition);
+  }
+  .progressbar li:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: var(--color-gray-light);
+    top: 16px;
+    left: -50%;
+    z-index: -1;
+    transition: background-color var(--transition);
+  }
+  .progressbar li:first-child:after {
+    content: none;
+  }
+  .progressbar li.active {
+    color: var(--color-primary);
+  }
+  .progressbar li.active:before {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
+  }
+  .progressbar li.active + li:after {
+    background: var(--color-primary);
+  }
+
+  /* بخش محتوا */
+  .step-content {
+    display: none;
+    animation: fadeIn 0.5s ease forwards;
+  }
+  .step-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  /* کارت محصول */
+  .product-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 6px var(--shadow);
+    margin-bottom: 15px;
+    background: var(--color-bg);
+    transition: box-shadow var(--transition);
+  }
+  .product-card:hover {
+    box-shadow: 0 6px 18px var(--shadow);
+  }
+  .product-image {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  .product-info {
+    flex-grow: 1;
+  }
+  .product-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+  .product-price {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  .product-quantity {
+    width: 60px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--color-gray-light);
+    text-align: center;
+    font-weight: 600;
+    margin-right: 15px;
+  }
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .quantity-btn {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color var(--transition);
+  }
+  .quantity-btn:hover {
+    background: var(--color-success);
+  }
+
+  /* فرم آدرس */
+  form.checkout-form {
+    margin-top: 20px;
+  }
+  form.checkout-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  form.checkout-form input, 
+  form.checkout-form textarea {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--color-gray-light);
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  form.checkout-form textarea {
+    resize: vertical;
+  }
+
+  /* دکمه‌ها */
+  .btn {
+    display: inline-block;
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: 12px 25px;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: background-color var(--transition);
+    text-align: center;
+  }
+  .btn:hover {
+    background: var(--color-success);
+  }
+  .btn:disabled {
+    background: var(--color-gray-light);
+    cursor: not-allowed;
+  }
+
+  /* مجموع */
+  .total-summary {
+    text-align: right;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 25px;
+  }
+
+  /* ریسپانسیو */
+  @media (max-width: 600px) {
+    .checkout-container {
+      padding: 20px;
+      margin: 20px 10px;
+    }
+    .product-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .product-image {
+      margin-bottom: 12px;
+    }
+    .quantity-control {
+      margin-top: 12px;
+    }
+  }
+</style>
+
+<div class="checkout-container">
+  <ul class="progressbar">
+    <li class="active" data-step="1">ورود / آدرس</li>
+    <li data-step="2">بازبینی سفارش</li>
+    <li data-step="3">پرداخت</li>
+  </ul>
+
+  <!-- مرحله 1 -->
+  <div class="step-content active" data-step="1">
+    <h2>آدرس خود را وارد کنید</h2>
+    <form id="address-form" class="checkout-form">
+      <label for="fullname">نام و نام خانوادگی</label>
+      <input type="text" id="fullname" name="fullname" placeholder="مثلاً: مهراب رضایی" required>
+
+      <label for="phone">شماره تماس</label>
+      <input type="tel" id="phone" name="phone" placeholder="مثلاً: 09123456789" required>
+
+      <label for="address">آدرس کامل</label>
+      <textarea id="address" name="address" rows="3" placeholder="آدرس خود را وارد کنید" required></textarea>
+
+      <button type="button" class="btn" id="to-step-2">مرحله بعد</button>
+    </form>
+  </div>
+
+  <!-- مرحله 2 -->
+  <div class="step-content" data-step="2">
+    <h2>مرور سفارش</h2>
+    <div id="order-items">
+      {% for item in cart_items %}
+      <div class="product-card" data-product-id="{{ item.product.id }}">
+        <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}" class="product-image">
+        <div

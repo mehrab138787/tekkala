@@ -1,0 +1,139 @@
+/* طراحی گریدی محصولات */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* کارت محصول */
+.product-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: scale(1.05); /* بزرگ شدن کارت */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* اطلاعات محصول */
+.product-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.product-info h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.product-info p {
+    font-size: 16px;
+    color: #ff4b5c; /* رنگ جذاب برای قیمت */
+    font-weight: bold;
+}
+
+/* دکمه‌ها */
+.product-card .add-to-cart-btn {
+    background-color: #ff4b5c;
+    color: #fff;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.product-card .add-to-cart-btn:hover {
+    background-color: #e03946;
+}
+
+/* طراحی پاپاپ جزئیات محصول */
+.product-detail-popup .popup-content {
+    width: 70%;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.product-detail-popup .popup-content img {
+    width: 80%;
+    height: 300px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.product-detail-popup .popup-content h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.product-detail-popup .popup-content p {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.product-detail-popup .popup-content .close-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.product-detail-popup .popup-content .close-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* نظرات کاربران */
+.product-comments .comment {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-comments textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
+
+.product-comments button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.product-comments button:hover {
+    background-color: #45a049;
+}
+ 

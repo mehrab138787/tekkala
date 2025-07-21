@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>جزئیات چت شماره {{ chat.id }}</h2>
+
+<div>
+  <h3>پیام‌ها:</h3>
+  <ul>
+    {% for message in messages %}
+      <li><strong>{{ message.user.username }}:</strong> {{ message.text }} <em>({{ message.created_at }})</em></li>
+    {% empty %}
+      <li>پیامی موجود نیست.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<a href="{% url 'admin_chat_list' %}">بازگشت به لیست چت‌ها</a>
+{% endblock %}
+

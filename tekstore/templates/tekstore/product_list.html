@@ -1,0 +1,154 @@
+{% extends 'tekstore/base.html' %}
+
+{% load humanize %}
+
+{% block content %}
+<!-- Container for products -->
+<div class="container">
+    <div class="search-box">
+        <form method="get" action="{% url 'product_search' %}">
+            <input type="text" name="q" placeholder="نام محصول مورد نظر را وارد کنید...">
+            <button type="submit">جستجو</button>
+        </form>
+    </div>
+
+    <!-- Product Grid -->
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card" onclick="showProductDetails({{ product.pk }})">
+                    <a href="javascript:void(0)">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/250x220?text=No+Image" alt="بدون تصویر">
+                        {% endif %}
+                    </a>
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.price|intcomma }} تومان</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-results">محصولی پیدا نشد.</p>
+    {% endif %}
+</div>
+
+<!-- Product Detail Popup -->
+<div class="product-detail-popup" id="productPopup">
+    <div class="popup-content">
+        <img id="productPopupImg" src="" alt="Product Image">
+        <h3 id="productPopupTitle"></h3>
+        <p id="productPopupPrice"></p>
+        <p id="productPopupDescription"></p>
+        <button class="close-btn" onclick="closeProductDetails()">بستن</button>
+    </div>
+</div>
+
+{% endblock %}
+
+<style>
+/* Product Detail Popup */
+.product-detail-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.product-detail-popup.active {
+    display: flex;
+    opacity: 1;
+}
+
+.product-detail-popup .popup-content {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    width: 70%;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    transform: translateY(30px);
+    animation: fadeInUp 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.product-detail-popup .popup-content img {
+    width: 80%;
+    height: 300px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.product-detail-popup .popup-content h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.product-detail-popup .popup-content p {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.product-detail-popup .popup-content .close-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.product-detail-popup .popup-content .close-btn:hover {
+    background-color: #d32f2f;
+}
+</style>
+
+<script>
+// Function to show product details in popup
+function showProductDetails(productId) {
+    // Fetch product details using an API call or Django URL
+    fetch(`/products/${productId}/`)  // آدرس URL باید مشخص باشد
+        .then(response => response.json())
+        .then(data => {
+            // Set product details to the popup
+            document.getElementById('productPopupImg').src = data.image_url || 'https://via.placeholder.com/300x300?text=No+Image';
+            document.getElementById('productPopupTitle').innerText = data.name;
+            document.getElementById('productPopupPrice').innerText = `${data.price} تومان`;
+            document.getElementById('productPopupDescription').innerText = data.description || 'توضیحات موجود نیست';
+
+            // Show the popup
+            document.getElementById('productPopup').classList.add('active');
+        })
+        .catch(error => {
+            console.error('Error fetching product details:', error);
+        });
+}
+
+// Function to close the product details popup
+function closeProductDetails() {
+    document.getElementById('productPopup').classList.remove('active');
+}
+</script>

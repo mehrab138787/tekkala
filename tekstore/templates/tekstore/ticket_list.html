@@ -1,0 +1,30 @@
+{% extends 'tekstore/base_generic.html' %}
+
+{% block content %}
+  <h2>تیکت‌های من</h2>
+
+  {% if tickets %}
+    <table class="ticket-table">
+      <thead>
+        <tr>
+          <th>موضوع</th>
+          <th>وضعیت</th>
+          <th>تاریخ ارسال</th>
+          <th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+          <tr>
+            <td>{{ ticket.subject }}</td>
+            <td><span class="ticket-status">{{ ticket.status }}</span></td>
+            <td>{{ ticket.created_at|date:"d F Y" }}</td>
+            <td><a href="{% url 'ticket_detail' ticket.id %}">مشاهده جزئیات</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>شما هنوز هیچ تیکتی ارسال نکرده‌اید.</p>
+  {% endif %}
+{% endblock %}

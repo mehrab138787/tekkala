@@ -1,0 +1,363 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}فروشگاه آنلاین{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      color: #4a4a4a;
+      overflow-x: hidden;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
+      z-index: 1000;
+      padding: 12px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    nav a {
+      color: #666666;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.3s ease;
+    }
+    nav a:hover {
+      color: #222222;
+    }
+    .cart-btn {
+      position: relative;
+      font-size: 26px;
+      color: #666666;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+    .cart-btn:hover {
+      color: #000000;
+    }
+    .cart-count {
+      position: absolute;
+      top: -7px;
+      left: -7px;
+      background: #555555;
+      color: #ffffff;
+      border-radius: 50%;
+      padding: 3px 7px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 0 4px rgba(0,0,0,0.15);
+    }
+    /* Slide-out cart */
+    .slide-cart {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 420px;
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: -6px 0 18px rgba(0,0,0,0.12);
+      padding: 25px 20px 20px 20px;
+      transition: right 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      z-index: 1100;
+      font-size: 15px;
+      color: #444444;
+    }
+    .slide-cart.open {
+      right: 0;
+    }
+    .slide-cart h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #222222;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      user-select: none;
+    }
+    .slide-cart .close-cart {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: #999999;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .slide-cart .close-cart:hover {
+      color: #222222;
+    }
+    .cart-items {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: #ccc transparent;
+    }
+    .cart-items::-webkit-scrollbar {
+      width: 6px;
+    }
+    .cart-items::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+      border-radius: 3px;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      gap: 14px;
+    }
+    .cart-item:hover {
+      background-color: #f0f0f3;
+    }
+    .ci-img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-left: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+    .ci-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ci-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #333333;
+      user-select: text;
+    }
+    .ci-pricenum {
+      font-size: 16px;
+      color: #6b7c93;
+      font-weight: 700;
+      user-select: none;
+    }
+    .ci-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .ci-controls input {
+      width: 58px;
+      padding: 6px 8px;
+      border: 1.5px solid #ccc;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      transition: border-color 0.3s ease;
+    }
+    .ci-controls input:focus {
+      outline: none;
+      border-color: #888;
+      box-shadow: 0 0 5px rgba(136,136,136,0.3);
+    }
+    .ci-controls .remove-btn {
+      background: #b0b0b5;
+      border: none;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      user-select: none;
+    }
+    .ci-controls .remove-btn:hover {
+      background: #88898c;
+    }
+    .cart-footer {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+      text-align: center;
+      user-select: none;
+    }
+    .total-text {
+      font-size: 20px;
+      font-weight: 800;
+      color: #222222;
+      margin-bottom: 14px;
+      letter-spacing: 0.04em;
+    }
+    .checkout-btn {
+      background: #52575c;
+      color: #f4f4f4;
+      padding: 14px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .checkout-btn:hover {
+      background: #393c40;
+    }
+    /* responsive */
+    @media (max-width: 480px) {
+      .slide-cart {
+        width: 100%;
+      }
+      header {
+        padding: 10px 18px;
+      }
+      nav ul {
+        gap: 16px;
+      }
+      nav a {
+        font-size: 14px;
+      }
+      .cart-btn {
+        font-size: 22px;
+      }
+      .ci-img {
+        width: 54px;
+        height: 54px;
+      }
+      .ci-controls input {
+        width: 48px;
+        padding: 5px 6px;
+        font-size: 14px;
+      }
+      .ci-controls .remove-btn {
+        padding: 5px 12px;
+        font-size: 13px;
+      }
+      .checkout-btn {
+        font-size: 15px;
+        padding: 12px;
+      }
+    }
+    main {
+      padding-top: 72px;
+      min-height: 70vh;
+    }
+    footer {
+      margin-top: 32px;
+      padding: 24px;
+      text-align: center;
+      color: #888888;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <ul>
+      <li><a href="{% url 'home' %}">خانه</a></li>
+      <li><a href="{% url 'product_list' %}">محصولات</a></li>
+      <li><a href="{% url 'profile' %}">پروفایل</a></li>
+      <li><a href="{% url 'auth' %}">ورود / ثبت‌نام</a></li>
+      <li class="cart-btn" id="cartToggle" aria-label="سبد خرید" role="button" tabindex="0">
+        🛒<span class="cart-count">{{ cart_items|length }}</span>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<aside class="slide-cart" id="slideCart" aria-hidden="true">
+  <button class="close-cart" id="cartClose" aria-label="بستن سبد خرید">&times;</button>
+  <h3>سبد خرید شما</h3>
+  <div class="cart-items">
+    {% for item in cart_items %}
+    <div class="cart-item" data-id="{{ item.product.id }}">
+      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="ci-img"/>
+      <div class="ci-info">
+        <span class="ci-name">{{ item.product.name }}</span>
+        <span class="ci-pricenum">{{ item.product.price|floatformat:0 }} تومان</span>
+        <div class="ci-controls">
+          <input type="number" min="1" value="{{ item.quantity }}" data-id="{{ item.product.id }}" class="qty-input"/>
+          <a href="{% url 'remove_from_cart' item.product.id %}" class="remove-btn">حذف</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="cart-footer">
+    <div class="total-text">مجموع: {{ total_price|floatformat:0 }} تومان</div>
+    <button class="checkout-btn" onclick="location.href='{% url 'checkout' %}'">ادامه خرید</button>
+  </div>
+</aside>
+
+{% if messages %}
+  <div class="messages">
+    {% for msg in messages %}
+      <div class="message {{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<main>{% block content %}{% endblock %}</main>
+<footer>© ۲۰۲۵ | ساخته شده توسط <strong>Mehrab</strong></footer>
+
+<script>
+  const slideCart = document.getElementById('slideCart');
+  const cartToggle = document.getElementById('cartToggle');
+  const cartClose = document.getElementById('cartClose');
+
+  cartToggle.onclick = () => {
+    slideCart.classList.toggle('open');
+    slideCart.setAttribute('aria-hidden', !slideCart.classList.contains('open'));
+  }
+  cartClose.onclick = () => {
+    slideCart.classList.remove('open');
+    slideCart.setAttribute('aria-hidden', 'true');
+  }
+
+  document.querySelectorAll('.qty-input').forEach(input => {
+    input.onchange = () => {
+      const id = input.dataset.id;
+      const qty = input.value;
+      // اگر ویو update_cart داری، این قسمت را فعال کن
+      // window.location.href = `{% url 'update_cart' 0 0 %}`.replace('/0/0/', `/${id}/${qty}/`);
+    };
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+{% extends "tekstore/base.html" %}
+{% load custom_filters %}
+
+{% block title %}ثبت نام / ورود - تک‌کالا{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 col-lg-5 shadow-sm rounded" style="background: #fff;">
+    <div class="card-header text-center text-white fw-bold fs-4" style="background-color: #6c757d; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem;">
+      ثبت نام / ورود
+    </div>
+    <div class="p-4" style="background-color: #f5f5f5;">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="بستن"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs mb-4" id="authTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab" aria-controls="login" aria-selected="true">ورود</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup" type="button" role="tab" aria-controls="signup" aria-selected="false">ثبت‌نام</button>
+        </li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content" id="authTabContent">
+        <!-- Login Tab -->
+        <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="login_submit" value="1" />
+            <div class="mb-3">
+              <label for="{{ login_form.username.id_for_label }}" class="form-label">{{ login_form.username.label }}</label>
+              {{ login_form.username|add_class:"form-control form-control-lg" }}
+              {% if login_form.username.errors %}
+                <div class="text-danger small mt-1">{{ login_form.username.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="mb-4">
+              <label for="{{ login_form.password.id_for_label }}" class="form-label">{{ login_form.password.label }}</label>
+              {{ login_form.password|add_class:"form-control form-control-lg" }}
+              {% if login_form.password.errors %}
+                <div class="text-danger small mt-1">{{ login_form.password.errors }}</div>
+              {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold fs-5">ورود</button>
+          </form>
+
+          <p class="mt-4 text-center small text-muted">
+            حساب کاربری نداری؟
+            <button class="btn btn-link p-0 fw-semibold" data-bs-toggle="tab" data-bs-target="#signup" type="button">ثبت‌نام کن</button>
+          </p>
+        </div>
+
+        <!-- Signup Tab -->
+        <div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="signup_submit" value="1" />
+            {% for field in signup_form %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control form-control-lg" }}
+                {% if field.errors %}
+                  <div class="text-danger small mt-1">
+                    {% for error in field.errors %}
+                      {{ error }}<br />
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success w-100 py-2 fw-semibold fs-5">ثبت‌نام</button>
+          </form>
+
+          <p class="mt-4 text-center small text-muted">
+            قبلا ثبت‌نام کردی؟
+            <button class="btn btn-link p-0 fw-semibold" data-bs-toggle="tab" data-bs-target="#login" type="button">وارد شو</button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

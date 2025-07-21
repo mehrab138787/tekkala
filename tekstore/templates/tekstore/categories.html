@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دسته‌بندی‌ها</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* استایل اصلی صفحه */
+        body {
+            font-family: 'Tahoma', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3.5rem;
+            color: #444;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-top: 40px;
+            text-transform: uppercase;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .category-list {
+            margin: 40px auto;
+            width: 90%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 1s 0.3s forwards;
+        }
+
+        /* استایل هر دسته */
+        .category-item {
+            background-color: #ffffff;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.5s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid #6c757d; /* خاکستری */
+            transform: scale(1);
+            transition: transform 0.4s ease-in-out, box-shadow 0.4s ease;
+        }
+
+        /* انیمیشن حرکت و سایه‌های hover */
+        .category-item:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            background-color: #e9ecef;
+            animation: shine 1s forwards;
+        }
+
+        /* عنوان دسته */
+        .category-item h3 {
+            font-size: 1.7rem;
+            color: #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        /* متن توضیحات */
+        .category-item p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            transition: color 0.3s ease;
+        }
+
+        /* آیکون باز و بسته کردن */
+        .toggle-icon {
+            font-size: 1.5rem;
+            color: #6c757d;
+            transition: transform 0.4s ease, color 0.4s ease;
+        }
+
+        .category-item:hover .toggle-icon {
+            color: #007bff; /* آبی تیره هنگام hover */
+            transform: rotate(180deg);
+        }
+
+        /* جزئیات هر دسته */
+        .category-details {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 15px;
+            transition: max-height 0.6s ease-out, padding 0.4s ease-out;
+            background-color: #f9f9f9;
+            margin-top: 10px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .category-item.active .category-details {
+            max-height: 300px;
+            padding: 15px;
+            opacity: 1;
+        }
+
+        .category-item.active {
+            background-color: #f1f1f1;
+        }
+
+        /* انیمیشن درخشان */
+        @keyframes shine {
+            0% {
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 0, 255, 0.5);
+            }
+        }
+
+        /* انیمیشن نمایش */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>دسته‌بندی‌ها</h1>
+    <div class="category-list">
+        {% for category in categories %}
+            <div class="category-item" onclick="toggleCategoryDetails({{ category.id }})" data-id="{{ category.id }}">
+                <h3>
+                    <a href="{% url 'category_detail' category.id %}" style="color: #444; text-decoration: none;">{{ category.name }}</a>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </h3>
+                <div class="category-details">
+                    <p>{{ category.description }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <div class="category-item">
+                <p>هیچ دسته‌بندی وجود ندارد.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // توابع برای باز و بسته کردن دسته‌ها
+        function toggleCategoryDetails(categoryId) {
+            const categoryItem = document.querySelector(`.category-item[data-id="${categoryId}"]`);
+            categoryItem.classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

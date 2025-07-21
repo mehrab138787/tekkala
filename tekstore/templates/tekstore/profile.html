@@ -1,0 +1,390 @@
+{% extends "tekstore/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}پروفایل کاربری - تک‌کالا{% endblock %}
+
+{% block content %}
+<style>
+/* --- استایل‌ها --- */
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  font-family: "Vazir", sans-serif;
+  direction: rtl;
+  color: #222;
+  background-color: #f9f9f9;
+  border-radius: 14px;
+  padding: 30px 25px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.profile-image {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 3px solid #999;
+  box-shadow: 0 4px 15px rgba(153,153,153,0.3);
+  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  transition: box-shadow 0.3s ease;
+}
+.profile-image:hover {
+  box-shadow: 0 6px 20px rgba(120,120,120,0.45);
+}
+
+.username {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.join-date {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+}
+
+/* محصولات مورد علاقه */
+.favorites-container {
+  margin-bottom: 30px;
+}
+.favorites-header {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #444;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background-color: #e6e6e6;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+.favorites-header:hover {
+  background-color: #d4d4d4;
+}
+.favorites-icon {
+  font-size: 1.5rem;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #666;
+}
+.favorites-icon.rotate {
+  transform: rotate(180deg);
+}
+.favorites-content {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1), padding 0.5s ease;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+  background-color: #fff;
+  padding: 0 15px;
+}
+.favorites-content.show {
+  max-height: 600px;
+  padding: 20px 15px;
+}
+.favorites-list {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 15px;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #eee;
+}
+.favorites-list::-webkit-scrollbar {
+  height: 10px;
+}
+.favorites-list::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+.favorites-list::-webkit-scrollbar-track {
+  background-color: #eee;
+  border-radius: 10px;
+}
+.favorite-item {
+  min-width: 140px;
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.favorite-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+.favorite-image {
+  width: 100%;
+  height: 110px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+.favorite-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #555;
+  min-height: 38px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* آکاردئون */
+.accordion-button {
+  font-weight: 700;
+  font-size: 1.1rem;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 12px !important;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  padding: 1rem 1.2rem;
+  box-shadow: none;
+}
+.accordion-button:not(.collapsed) {
+  background-color: #ddd;
+  color: #222;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.accordion-button:hover {
+  background-color: #ccc;
+  color: #222;
+}
+.accordion-body {
+  background-color: #fff;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+  padding: 1.5rem 2rem;
+  transition: opacity 0.4s ease;
+}
+.accordion-collapse.show .accordion-body {
+  opacity: 1;
+}
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* آمار سفارشات */
+.stats-container {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.stat-card {
+  flex: 1 1 28%;
+  background-color: #f5f5f5;
+  border-radius: 16px;
+  padding: 25px 15px;
+  box-shadow: 0 7px 18px rgba(0,0,0,0.1);
+  text-align: center;
+  color: #444;
+  font-weight: 700;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+.stat-icon {
+  font-size: 3.4rem;
+  margin-bottom: 14px;
+  user-select: none;
+  color: #666;
+}
+.stat-title {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+.stat-value {
+  font-size: 2.6rem;
+  color: #222;
+  letter-spacing: 1.2px;
+}
+
+/* اطلاعات پروفایل */
+.profile-info-item {
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.profile-info-label {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #444;
+  width: 110px;
+}
+.profile-info-value {
+  flex-grow: 1;
+}
+.profile-info-value input,
+.profile-info-value textarea {
+  background-color: #eee;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 14px;
+  width: 100%;
+  color: #444;
+  font-weight: 600;
+  font-size: 1rem;
+  resize: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.profile-info-value input[readonly],
+.profile-info-value textarea[readonly] {
+  cursor: default;
+}
+
+/* دکمه خروج */
+.logout-btn {
+  display: block;
+  margin: 40px auto 0 auto;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 10px 30px;
+  background-color: #ccc;
+  color: #222;
+  border-radius: 10px;
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+.logout-btn:hover {
+  background-color: #bbb;
+  color: #111;
+}
+
+/* ریسپانسیو */
+@media (max-width: 600px) {
+  .stat-card {
+    flex: 1 1 100%;
+  }
+  .favorites-list {
+    gap: 12px;
+  }
+  .favorite-item {
+    min-width: 120px;
+  }
+}
+</style>
+
+<div class="container">
+
+  <!-- آیکون یوزر سفید جایگزین عکس پروفایل -->
+  <div class="profile-image" aria-label="آیکون پروفایل">
+    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" fill="#999" viewBox="0 0 24 24">
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </svg>
+  </div>
+
+  <div class="username">{{ user.username }}</div>
+  <div class="join-date">عضو شده در {{ user.date_joined|date:"Y/m/d" }}</div>
+
+  <!-- محصولات مورد علاقه -->
+  <div class="favorites-container">
+    <div class="favorites-header" id="favoritesToggle">
+      <span>❤️ محصولات مورد علاقه شما</span>
+      <span class="favorites-icon" id="favoritesIcon">⌄</span>
+    </div>
+    <div class="favorites-content" id="favoritesContent">
+      {% if favorite_products %}
+        <div class="favorites-list">
+          {% for product in favorite_products %}
+          <div class="favorite-item" title="{{ product.title }}">
+            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/no-image.png' %}{% endif %}" alt="{{ product.title }}" class="favorite-image" loading="lazy" />
+            <div class="favorite-title">{{ product.title|truncatechars:25 }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted" style="padding: 10px; color: #777;">شما هنوز محصولی را به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- آمار سفارشات -->
+  <div class="accordion mb-4" id="ordersStatsAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOrdersStats">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrdersStats" aria-expanded="true" aria-controls="collapseOrdersStats">
+          🛒 آمار سفارشات
+        </button>
+      </h2>
+      <div id="collapseOrdersStats" class="accordion-collapse collapse show" aria-labelledby="headingOrdersStats" data-bs-parent="#ordersStatsAccordion">
+        <div class="accordion-body">
+          <div class="stats-container">
+            <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-title">تعداد سفارشات</div><div class="stat-value">{{ total_orders }}</div></div>
+            <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-title">مجموع هزینه سفارش‌ها</div><div class="stat-value">{{ total_cost|intcomma }} تومان</div></div>
+            <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-title">تعداد کالاهای خریداری‌شده</div><div class="stat-value">{{ total_items }}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- اطلاعات پروفایل -->
+  <div class="accordion" id="profileInfoAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingProfileInfo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProfileInfo" aria-expanded="false" aria-controls="collapseProfileInfo">
+          👤 اطلاعات پروفایل
+        </button>
+      </h2>
+      <div id="collapseProfileInfo" class="accordion-collapse collapse" aria-labelledby="headingProfileInfo" data-bs-parent="#profileInfoAccordion">
+        <div class="accordion-body">
+          <div class="profile-info-item"><div class="profile-info-label">نام</div><div class="profile-info-value"><input type="text" value="{{ user.first_name }}" readonly></div></div>
+          <div class="profile-info-item"><div class="profile-info-label">نام خانوادگی</div><div class="profile-info-value"><input type="text" value="{{ user.last_name }}" readonly></div></div>
+          <div class="profile-info-item"><div class="profile-info-label">ایمیل</div><div class="profile-info-value"><input type="email" value="{{ user.email }}" readonly></div></div>
+          <div class="profile-info-item"><div class="profile-info-label">شماره تلفن</div><div class="profile-info-value"><input type="text" value="{{ user.profile.phone }}" readonly></div></div>
+          <div class="profile-info-item"><div class="profile-info-label">آدرس</div><div class="profile-info-value"><textarea rows="2" readonly>{{ user.profile.address }}</textarea></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- دکمه خروج -->
+  <a href="{% url 'logout' %}" class="btn logout-btn">خروج از حساب کاربری</a>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const favoritesToggle = document.getElementById('favoritesToggle');
+    const favoritesContent = document.getElementById('favoritesContent');
+    const favoritesIcon = document.getElementById('favoritesIcon');
+
+    favoritesToggle.addEventListener('click', function() {
+      if(favoritesContent.classList.contains('show')) {
+        favoritesContent.style.maxHeight = null;
+        favoritesContent.classList.remove('show');
+      } else {
+        favoritesContent.style.maxHeight = favoritesContent.scrollHeight + "px";
+        favoritesContent.classList.add('show');
+      }
+      favoritesIcon.classList.toggle('rotate');
+    });
+  });
+</script>
+{% endblock %}

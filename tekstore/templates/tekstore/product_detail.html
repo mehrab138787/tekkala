@@ -1,0 +1,174 @@
+{% extends 'tekstore/base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container">
+    <div class="search-box">
+        <form method="get" action="{% url 'product_search' %}">
+            <input type="text" name="q" placeholder="نام محصول مورد نظر را وارد کنید...">
+            <button type="submit">جستجو</button>
+        </form>
+    </div>
+
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card" onclick="showProductDetails({{ product.pk }})">
+                    <a href="javascript:void(0)">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/250x220?text=No+Image" alt="بدون تصویر">
+                        {% endif %}
+                    </a>
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.price|intcomma }} تومان</p>
+                        <!-- Wishlist Icon -->
+                        <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist({{ product.pk }})">
+                            ❤️
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-results">محصولی پیدا نشد.</p>
+    {% endif %}
+</div>
+
+<!-- Product Detail Popup -->
+<div class="product-detail-popup" id="productPopup">
+    <div class="popup-content">
+        <img id="productPopupImg" src="" alt="Product Image">
+        <h3 id="productPopupTitle" data-product-id=""></h3>
+        <p id="productPopupPrice"></p>
+        <p id="productPopupDescription"></p>
+
+        <!-- Wishlist button in popup -->
+        <button class="wishlist-btn" onclick="toggleWishlistFromPopup()">❤️ افزودن به علاقه‌مندی‌ها</button>
+
+        <button class="close-btn" onclick="closeProductDetails()">بستن</button>
+
+        <div class="product-comments">
+            <h4>نظرات کاربران</h4>
+            <div id="productCommentsList"></div>
+
+            <h4>نظر خود را بنویسید</h4>
+            <form id="commentForm" onsubmit="submitComment(event)">
+                <textarea id="commentText" rows="4" placeholder="نظر خود را بنویسید..."></textarea>
+                <button type="submit">ارسال نظر</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+.wishlist-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: red;
+    cursor: pointer;
+    margin-top: 10px;
+}
+</style>
+
+<script>
+function showProductDetails(productId) {
+    fetch(`/products/${productId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('productPopupImg').src = data.image_url || 'https://via.placeholder.com/300x300?text=No+Image';
+            document.getElementById('productPopupTitle').innerText = data.name;
+            document.getElementById('productPopupTitle').dataset.productId = data.id;
+            document.getElementById('productPopupPrice').innerText = `${data.price} تومان`;
+            document.getElementById('productPopupDescription').innerText = data.description || 'توضیحات موجود نیست';
+
+            let commentsList = '';
+            data.comments.forEach(comment => {
+                commentsList += `
+                    <div class="comment">
+                        <p><strong>${comment.user}</strong>: ${comment.text}</p>
+                        <p><small>${comment.created_at}</small></p>
+                    </div>
+                `;
+            });
+            document.getElementById('productCommentsList').innerHTML = commentsList;
+
+            document.getElementById('productPopup').classList.add('active');
+        })
+        .catch(error => {
+            console.error('Error fetching product details:', error);
+        });
+}
+
+function closeProductDetails() {
+    document.getElementById('productPopup').classList.remove('active');
+}
+
+function submitComment(event) {
+    event.preventDefault();
+    const productId = document.getElementById('productPopupTitle').dataset.productId;
+    const commentText = document.getElementById('commentText').value;
+
+    if (!commentText) {
+        alert("لطفاً نظر خود را وارد کنید.");
+        return;
+    }
+
+    fetch(`/products/${productId}/add_comment/`, {
+        method: 'POST',
+        body: JSON.stringify({ comment_text: commentText }),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("نظر شما با موفقیت ارسال شد!");
+        showProductDetails(productId);
+    })
+    .catch(error => {
+        console.error('Error submitting comment:', error);
+    });
+}
+
+function toggleWishlist(productId) {
+    fetch(`/products/${productId}/wishlist/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || "وضعیت علاقه‌مندی تغییر کرد.");
+    })
+    .catch(error => {
+        console.error('Error toggling wishlist:', error);
+    });
+}
+
+function toggleWishlistFromPopup() {
+    const productId = document.getElementById('productPopupTitle').dataset.productId;
+    toggleWishlist(productId);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

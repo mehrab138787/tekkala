@@ -1,0 +1,19 @@
+{% extends "tekstore/base.html" %}
+{% block content %}
+<h2>پنل کاربری - وضعیت درخواست‌های همکاری</h2>
+
+{% if coop_requests.exists %}
+    <ul>
+    {% for request in coop_requests %}
+        <li>
+            <strong>وضعیت درخواست:</strong> {{ request.get_status_display }} <br>
+            <strong>توضیحات:</strong> {{ request.description|default:"بدون توضیحات" }} <br>
+            <strong>تاریخ ارسال:</strong> {{ request.created_at|date:"Y-m-d H:i" }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>شما هنوز هیچ درخواست همکاری ثبت نکرده‌اید.</p>
+{% endif %}
+
+{% endblock %}

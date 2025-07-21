@@ -1,0 +1,10 @@
+{% extends 'tekstore/base.html' %}
+
+{% block content %}
+    <h2>ایجاد تیکت جدید</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">ارسال تیکت</button>
+    </form>
+{% endblock %}

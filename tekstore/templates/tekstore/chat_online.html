@@ -1,0 +1,220 @@
+{% extends 'tekstore/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* کانتینر اصلی */
+  .chat-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* هدر */
+  .chat-header {
+    padding: 22px 0;
+    background: #f0f0f0;
+    color: #444;
+    font-weight: 700;
+    font-size: 22px;
+    text-align: center;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-bottom: 1.5px solid #ddd;
+    user-select: none;
+  }
+
+  /* بخش پیام‌ها */
+  .chat-body {
+    flex: 1;
+    padding: 25px 28px;
+    overflow-y: auto;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    scroll-behavior: smooth;
+  }
+
+  /* پیام‌ها */
+  .chat-message {
+    max-width: 70%;
+    padding: 16px 24px;
+    border-radius: 28px;
+    line-height: 1.5;
+    font-size: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: messageFadeIn 0.45s forwards;
+  }
+
+  @keyframes messageFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* پیام ادمین فقط */
+  .message-admin {
+    background: #e3e3e3;
+    color: #222;
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    animation-delay: 0.2s;
+  }
+
+  /* پیام کاربر حذف شده */
+
+  /* فوتر */
+  .chat-footer {
+    display: flex;
+    padding: 18px 28px;
+    background: #f0f0f0;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    border-top: 1.5px solid #ddd;
+  }
+
+  /* ورودی متن */
+  .chat-footer input {
+    flex: 1;
+    padding: 16px 24px;
+    border-radius: 32px;
+    border: 1.5px solid #ccc;
+    font-size: 16px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .chat-footer input:focus {
+    border-color: #999;
+    box-shadow: 0 0 8px rgba(153, 153, 153, 0.4);
+  }
+
+  /* دکمه ارسال */
+  .chat-footer button {
+    margin-left: 16px;
+    padding: 16px 32px;
+    border-radius: 32px;
+    border: none;
+    background: #888;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(136,136,136,0.3);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .chat-footer button:hover {
+    background: #555;
+    box-shadow: 0 8px 25px rgba(85,85,85,0.5);
+  }
+
+  /* اسکرول بار */
+  .chat-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .chat-body::-webkit-scrollbar-thumb {
+    background-color: #b2b2b2;
+    border-radius: 12px;
+  }
+
+  .chat-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+</style>
+
+<div class="chat-container" role="region" aria-label="پشتیبانی آنلاین">
+  <div class="chat-header" role="heading" aria-level="1">
+    پشتیبانی آنلاین
+  </div>
+
+  <div class="chat-body" id="chat-body" role="log" aria-live="polite" aria-relevant="additions">
+    <div class="chat-message message-admin" style="animation-delay: 0.3s;">
+      سلام! چطور می‌تونم کمکتون کنم؟ 😊
+    </div>
+  </div>
+
+  <div class="chat-footer">
+    <input type="text" id="chat-input" placeholder="پیامتو اینجا بنویس..." aria-label="متن پیام" autocomplete="off" />
+    <button aria-label="ارسال پیام" onclick="sendMessage()">ارسال</button>
+  </div>
+</div>
+
+<script>
+  const chatBody = document.getElementById("chat-body");
+  const chatInput = document.getElementById("chat-input");
+
+  function createMessageBubble(text, isUser = true) {
+    const bubble = document.createElement("div");
+    bubble.classList.add("chat-message");
+    bubble.classList.add(isUser ? "message-user" : "message-admin");
+    bubble.textContent = text;
+    bubble.style.opacity = 0;
+    bubble.style.transform = "translateY(20px)";
+    chatBody.appendChild(bubble);
+
+    setTimeout(() => {
+      bubble.style.opacity = 1;
+      bubble.style.transform = "translateY(0)";
+      bubble.style.transition = "opacity 0.45s ease, transform 0.45s ease";
+    }, 100);
+
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  // فقط پیام کاربر با استایل پیام ادمین (سفید و خاکستری)
+  function sendMessage() {
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+
+    // پیام کاربر رو به صورت admin style نمایش بده (خاکستری روشن)
+    createMessageBubble(msg, false);
+    chatInput.value = "";
+    chatInput.focus();
+
+    // پاسخ ادمین با تأخیر و پیام‌های متنوع
+    setTimeout(() => {
+      const replies = [
+        "پیامتون رو دریافت کردیم. پاسخ در اسرع وقت ارسال میشه.",
+        "ممنون از پیامتون، در حال بررسی هستیم.",
+        "با تشکر از صبر شما، به زودی پاسخ خواهیم داد.",
+        "اگر سوال دیگه‌ای داشتید، خوشحال می‌شیم کمک کنیم!"
+      ];
+      const randomReply = replies[Math.floor(Math.random() * replies.length)];
+      createMessageBubble(randomReply, false);
+    }, 1200);
+  }
+
+  chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+</script>
+{% endblock %}

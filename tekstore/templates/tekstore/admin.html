@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <title>پنل ادمین چت‌ها</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      direction: rtl;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .chat-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .chat-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      max-width: 90%;
+      word-break: break-word;
+    }
+    .user {
+      align-self: flex-end;
+      background: #888;
+      color: white;
+    }
+    .admin {
+      align-self: flex-start;
+      background: #ccc;
+    }
+    .reply-input {
+      margin-top: auto;
+      display: flex;
+      gap: 10px;
+    }
+    .reply-input input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+    .reply-input button {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #333;
+      color: white;
+      cursor: pointer;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>پنل مدیریت چت کاربران</h1>
+  <div class="chat-list" id="chatList"></div>
+
+  <script>
+    // داده فرضی از localStorage (شبیه‌سازی)
+    const chats = JSON.parse(localStorage.getItem('chatMessages')) || [];
+
+    const chatList = document.getElementById('chatList');
+
+    function renderChats() {
+      chatList.innerHTML = '';
+      if (chats.length === 0) {
+        chatList.innerHTML = '<p style="text-align:center;">هیچ پیامی وجود ندارد</p>';
+        return;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'chat-card';
+
+      chats.forEach(({ type, text, time }, index) => {
+        const msg = document.createElement('div');
+        msg.className = `message ${type}`;
+        msg.textContent = `[${time}] ${text}`;
+        card.appendChild(msg);
+      });
+
+      const replyBox = document.createElement('div');
+      replyBox.className = 'reply-input';
+
+      const input = document.createElement('input');
+      input.placeholder = 'پاسخ ادمین...';
+
+      const btn = document.createElement('button');
+      btn.textContent = 'ارسال';
+
+      btn.onclick = () => {
+        if (input.value.trim()) {
+          chats.push({ type: 'admin', text: input.value.trim(), time: getCurrentTime() });
+          localStorage.setItem('chatMessages', JSON.stringify(chats));
+          renderChats(); // بازسازی
+        }
+      };
+
+      replyBox.appendChild(input);
+      replyBox.appendChild(btn);
+
+      const del = document.createElement('button');
+      del.className = 'delete-btn';
+      del.textContent = '🗑 حذف همه';
+      del.onclick = () => {
+        if (confirm('آیا مطمئنی می‌خواهی تمام پیام‌ها را حذف کنی؟')) {
+          localStorage.removeItem('chatMessages');
+          renderChats();
+        }
+      };
+
+      card.appendChild(replyBox);
+      card.appendChild(del);
+
+      chatList.appendChild(card);
+    }
+
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    renderChats();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+{% extends 'tekstore/base.html' %}
+{% load static %}
+
+{% block title %}صفحه اصلی | تک‌کالا{% endblock %}
+
+{% block content %}
+
+<style>
+  /* متغیرهای رنگی تم خاکستری/سفید */
+  :root {
+    --gray-lightest: #f8f9fa;
+    --gray-lighter: #e9ecef;
+    --gray-light: #dee2e6;
+    --gray-medium: #adb5bd;
+    --gray-dark: #495057;
+    --gray-darker: #343a40;
+    --gray-darkest: #212529;
+    --white: #fff;
+  }
+
+  body {
+    background-color: var(--gray-lightest);
+    color: var(--gray-darkest);
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* کانتینر مرکزی */
+  .container {
+    max-width: 1180px;
+    margin: auto;
+    padding: 4rem 1rem 6rem;
+  }
+
+  /* انیمیشن عمومی fadeInUp3D */
+  @keyframes fadeInUp3D {
+    0% {
+      opacity: 0;
+      transform: translateY(50px) rotateX(20deg) scale(0.95);
+      filter: brightness(0.85);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) rotateX(0deg) scale(1);
+      filter: brightness(1);
+    }
+  }
+
+  /* انیمیشن شناور 3D نرم */
+  @keyframes float3D {
+    0%, 100% {
+      transform: translateY(0) translateZ(0) rotateX(0deg);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      filter: brightness(1);
+    }
+    50% {
+      transform: translateY(-12px) translateZ(10px) rotateX(3deg);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      filter: brightness(1.1);
+    }
+  }
+
+  /* هدر خوش آمدگویی */
+  .hero {
+    text-align: center;
+    margin-bottom: 6rem;
+    opacity: 0;
+    animation: fadeInUp3D 1.5s ease forwards;
+    animation-delay: 0.3s;
+  }
+
+  .hero h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--gray-darkest);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .hero p {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--gray-darker);
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: 1.7;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
+  }
+
+  /* دکمه حرفه‌ای */
+  .btn-custom {
+    margin-top: 3rem;
+    background: linear-gradient(135deg, var(--gray-lighter), var(--gray-light));
+    color: var(--gray-darker);
+    font-weight: 800;
+    font-size: 1.3rem;
+    padding: 15px 60px;
+    border-radius: 60px;
+    border: none;
+    box-shadow:
+      0 10px 25px rgba(0,0,0,0.12),
+      inset 0 -6px 12px rgba(255,255,255,0.8);
+    cursor: pointer;
+    transition:
+      background 0.45s cubic-bezier(0.4,0,0.2,1),
+      box-shadow 0.45s ease,
+      transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.09));
+  }
+  .btn-custom:hover {
+    background: linear-gradient(135deg, var(--gray-light), var(--gray-lighter));
+    box-shadow:
+      0 14px 35px rgba(0,0,0,0.18),
+      inset 0 -8px 18px rgba(255,255,255,0.95);
+    transform: translateY(-5px) scale(1.05);
+  }
+  .btn-custom:active {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      0 8px 22px rgba(0,0,0,0.14),
+      inset 0 -4px 8px rgba(255,255,255,0.75);
+  }
+
+  /* بخش محصولات */
+  .products-section {
+    margin-top: 0;
+  }
+
+  .products-section h2 {
+    font-weight: 900;
+    font-size: 3rem;
+    color: var(--gray-darkest);
+    letter-spacing: 0.07em;
+    margin-bottom: 3.5rem;
+    text-align: center;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  /* اسلایدر محصولات */
+  .product-slider {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 0.5rem;
+  }
+
+  /* مخفی کردن اسکرول */
+  .product-slider::-webkit-scrollbar {
+    display: none;
+  }
+  .product-slider {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  /* کارت محصول */
+  .product-card {
+    min-width: 320px;
+    background: var(--white);
+    border-radius: 18px;
+    box-shadow:
+      0 18px 30px rgba(0,0,0,0.12),
+      inset 0 -10px 15px rgba(0,0,0,0.06);
+    padding: 2rem 1.5rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeInUp3D 1.2s forwards;
+  }
+
+  /* تاخیر انیمیشن بر اساس آیتم */
+  {% for i in products %}
+  .product-card:nth-child({{ forloop.counter }}) {
+    animation-delay: {{ forloop.counter|add:"0.3"|floatformat:1 }}s;
+  }
+  {% endfor %}
+
+  .product-card:hover {
+    animation: float3D 4s ease-in-out infinite;
+    box-shadow:
+      0 28px 45px rgba(0,0,0,0.22),
+      inset 0 -14px 25px rgba(0,0,0,0.1);
+    transform-style: preserve-3d;
+  }
+
+  /* تصویر محصول */
+  .product-image {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+    border-radius: 16px;
+    margin-bottom: 1.6rem;
+    transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.04));
+  }
+  .product-card:hover .product-image {
+    transform: scale(1.12) rotate3d(0,1,0,6deg);
+  }
+
+  /* عنوان محصول */
+  .product-title {
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: var(--gray-darkest);
+    margin-bottom: 0.8rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  /* توضیحات */
+  .product-desc {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--gray-medium);
+    line-height: 1.5;
+    margin-bottom: 1.4rem;
+    min-height: 70px;
+  }
+
+  /* قیمت */
+  .product-price {
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--gray-darker);
+    letter-spacing: 0.06em;
+    margin-bottom: 1.8rem;
+  }
+
+  /* دکمه مشاهده */
+  .btn-view {
+    align-self: flex-start;
+    background: transparent;
+    border: 2px solid var(--gray-medium);
+    color: var(--gray-darker);
+    border-radius: 50px;
+    padding: 12px 36px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition:
+      all 0.35s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    user-select: none;
+  }
+  .btn-view:hover {
+    background: var(--gray-light);
+    border-color: var(--gray-dark);
+    color: var(--gray-darkest);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    transform: scale(1.1) translateY(-2px);
+  }
+
+  /* ریسپانسیو */
+  @media (max-width: 992px) {
+    .container {
+      padding: 3rem 1rem 4rem;
+    }
+    .product-card {
+      min-width: 280px;
+      padding: 1.6rem 1.2rem 2rem;
+    }
+    .product-image {
+      height: 190px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+    }
+    .hero p {
+      font-size: 1.15rem;
+      max-width: 400px;
+    }
+  }
+  @media (max-width: 576px) {
+    .product-slider {
+      gap: 1.2rem;
+      padding-bottom: 0.3rem;
+    }
+    .product-card {
+      min-width: 260px;
+      padding: 1.4rem 1rem 1.6rem;
+    }
+    .product-image {
+      height: 140px;
+    }
+    .hero h1 {
+      font-size: 2.2rem;
+    }
+    .hero p {
+      font-size: 1rem;
+      max-width: 280px;
+    }
+    .btn-custom {
+      padding: 12px 40px;
+      font-size: 1.1rem;
+    }
+  }
+</style>
+
+<div class="container hero" id="hero-section">
+  <h1>به تک‌کالا خوش آمدید</h1>
+  <p>جدیدترین و بهترین محصولات دیجیتال را با بهترین کیفیت و قیمت مناسب خریداری کنید.</p>
+  <button class="btn-custom" onclick="location.href='{% url 'product_list' %}'">مشاهده همه محصولات</button>
+</div>
+
+<div class="container products-section">
+  <h2>محصولات ویژه</h2>
+  <div class="product-slider" aria-label="محصولات ویژه">
+    {% for product in products %}
+    <div>
+      <article class="product-card" tabindex="0" aria-labelledby="title-{{ product.pk }}" aria-describedby="desc-{{ product.pk }}">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" loading="lazy" />
+        <h3 class="product-title" id="title-{{ product.pk }}">{{ product.name }}</h3>
+        <p class="product-desc" id="desc-{{ product.pk }}">{{ product.description|truncatewords:15 }}</p>
+        <p class="product-price">{{ product.price|floatformat:0 }} تومان</p>
+        <a href="{% url 'product_detail' product.pk %}" class="btn-view" aria-label="مشاهده جزئیات {{ product.name }}">مشاهده</a>
+      </article>
+    </div>
+    {% empty %}
+    <p style="text-align:center; color: var(--gray-medium); font-weight: 600; margin-top: 3rem;">هیچ محصولی برای نمایش وجود ندارد.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+  integrity="sha256-/xUj+3OJ+z5NjgsxdI+kzDxJf6yw0M0V2IN+vE3MmSM=" crossorigin="anonymous"></script>
+
+<script>
+  // انیمیشن ورودی تاخیر دار برای کارت‌ها - خودکار با کلاس ها
+  $(document).ready(function() {
+    $('.product-card').each(function(i) {
+      $(this).css('animation-delay', (0.4 + i * 0.25) + 's');
+    });
+  });
+
+  // اسلایدر بدون لگ و با حرکت نرم + پارالاکس
+  class ParallaxSlider {
+    constructor(selector) {
+      this.slider = document.querySelector(selector);
+      this.position = 0;
+      this.speed = 0.5;
+      this.isDown = false;
+      this.startX = 0;
+      this.scrollLeft = 0;
+
+      this.initEvents();
+      this.animate();
+    }
+
+    initEvents() {
+      this.slider.addEventListener('mousedown', e => this.startDrag(e));
+      this.slider.addEventListener('touchstart', e => this.startDrag(e.touches[0]));
+      this.slider.addEventListener('mouseup', e => this.stopDrag());
+      this.slider.addEventListener('mouseleave', e => this.stopDrag());
+      this.slider.addEventListener('touchend', e => this.stopDrag());
+      this.slider.addEventListener('mousemove', e => this.drag(e));
+      this.slider.addEventListener('touchmove', e => this.drag(e.touches[0]));
+    }
+
+    startDrag(e) {
+      this.isDown = true;
+      this.startX = e.pageX - this.slider.offsetLeft;
+      this.scrollLeft = this.slider.scrollLeft;
+      this.slider.style.cursor = 'grabbing';
+    }
+
+    stopDrag() {
+      this.isDown = false;
+      this.slider.style.cursor = 'grab';
+    }
+
+    drag(e) {
+      if(!this.isDown) return;
+      e.preventDefault();
+      const x = e.pageX - this.slider.offsetLeft;
+      const walk = (x - this.startX) * this.speed;
+      this.slider.scrollLeft = this.scrollLeft - walk;
+    }
+
+    animate() {
+      const cards = this.slider.querySelectorAll('.product-card img');
+      cards.forEach((img, i) => {
+        const scrollPercent = this.slider.scrollLeft / (this.slider.scrollWidth - this.slider.clientWidth);
+        const offset = (i - scrollPercent * cards.length) * 15;
+        img.style.transform = `translateX(${offset}px) scale(1) rotateY(${offset / 5}deg)`;
+        img.style.transition = 'transform 0.3s ease-out';
+      });
+
+      requestAnimationFrame(() => this.animate());
+    }
+  }
+
+  new ParallaxSlider('.product-slider');
+</script>
+
+{% endblock %}

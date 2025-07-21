@@ -1,0 +1,252 @@
+{% extends "tekstore/base_generic.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="support-container">
+
+  <h2 class="support-header animate-fade-in">پشتیبانی</h2>
+
+  <div id="choice-container" class="choice-container animate-slide-up">
+    <p class="choice-text">برای ارتباط، یکی از گزینه‌های زیر را انتخاب کنید:</p>
+    <div class="buttons-wrapper">
+      <a href="{% url 'chat_online' %}" class="btn choice-btn chat-btn">
+        💬 چت آنلاین
+      </a>
+      <button id="show-ticket-btn" class="btn choice-btn ticket-btn">
+        📝 ارسال تیکت
+      </button>
+    </div>
+  </div>
+
+  <div id="ticket-form-container" class="ticket-form-container animate-fade-in" style="display:none;">
+    <h3>ارسال تیکت جدید</h3>
+    <form method="post" class="ticket-form" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="subject">موضوع</label>
+        <input type="text" name="subject" id="subject" placeholder="موضوع تیکت را وارد کنید" required class="form-input" />
+      </div>
+      <div class="form-group">
+        <label for="message">پیام</label>
+        <textarea name="message" id="message" placeholder="پیام خود را وارد کنید" required class="form-input"></textarea>
+      </div>
+      <button type="submit" class="btn submit-btn">ارسال</button>
+    </form>
+    <button id="back-btn" class="btn back-btn">← بازگشت</button>
+  </div>
+
+</div>
+
+<style>
+  /* رنگ‌ها */
+  :root {
+    --gray-light: #f5f5f5;
+    --gray-medium: #bbb;
+    --gray-dark: #444;
+    --gray-darker: #222;
+    --white: #fff;
+  }
+
+  /* کل کانتینر */
+  .support-container {
+    max-width: 700px;
+    margin: 70px auto;
+    background: var(--white);
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow:
+      0 20px 40px rgba(0,0,0,0.05),
+      0 0 0 1px rgba(0,0,0,0.05);
+    font-family: 'Vazir', Tahoma, sans-serif;
+    color: var(--gray-darker);
+    user-select: none;
+  }
+
+  /* عنوان اصلی */
+  .support-header {
+    font-size: 38px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  /* انتخاب روش */
+  .choice-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .choice-text {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: var(--gray-dark);
+  }
+
+  /* دکمه‌ها */
+  .buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 18px 40px;
+    border-radius: 35px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 3px solid var(--gray-medium);
+    background: var(--gray-light);
+    color: var(--gray-darker);
+    transition:
+      background 0.4s ease,
+      color 0.4s ease,
+      box-shadow 0.4s ease,
+      transform 0.3s ease;
+    text-decoration: none;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.07);
+  }
+
+  .btn:hover,
+  .btn:focus {
+    background: var(--gray-medium);
+    color: var(--white);
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+    outline: none;
+  }
+
+  /* دکمه چت */
+  .chat-btn {
+    border-color: #777;
+  }
+
+  /* دکمه تیکت */
+  .ticket-btn {
+    border-color: #999;
+  }
+
+  /* فرم تیکت */
+  .ticket-form-container {
+    background: var(--gray-light);
+    border-radius: 20px;
+    padding: 30px 35px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.07);
+  }
+
+  .ticket-form-container h3 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--gray-darker);
+  }
+
+  .form-group {
+    margin-bottom: 22px;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--gray-dark);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 16px;
+    border: 2px solid var(--gray-medium);
+    border-radius: 15px;
+    background: var(--white);
+    color: var(--gray-darker);
+    transition: border-color 0.3s ease;
+  }
+
+  .form-input:focus {
+    border-color: var(--gray-darker);
+    outline: none;
+  }
+
+  /* دکمه ارسال */
+  .submit-btn {
+    width: 100%;
+    margin-top: 15px;
+    border-color: var(--gray-darker);
+    background: var(--gray-darker);
+    color: var(--white);
+  }
+
+  .submit-btn:hover {
+    background: var(--gray-medium);
+    border-color: var(--gray-medium);
+  }
+
+  /* دکمه بازگشت */
+  .back-btn {
+    margin-top: 18px;
+    background: transparent;
+    color: var(--gray-darker);
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: color 0.3s ease;
+    user-select: auto;
+  }
+
+  .back-btn:hover {
+    color: var(--gray-medium);
+  }
+
+  /* انیمیشن‌ها */
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1.3s ease forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 1s ease forwards;
+  }
+</style>
+
+<script>
+  // نمایش فرم تیکت با انیمیشن و مخفی کردن انتخاب‌ها
+  const showTicketBtn = document.getElementById('show-ticket-btn');
+  const choiceContainer = document.getElementById('choice-container');
+  const ticketFormContainer = document.getElementById('ticket-form-container');
+  const backBtn = document.getElementById('back-btn');
+
+  showTicketBtn.addEventListener('click', () => {
+    choiceContainer.style.display = 'none';
+    ticketFormContainer.style.display = 'block';
+  });
+
+  backBtn.addEventListener('click', () => {
+    ticketFormContainer.style.display = 'none';
+    choiceContainer.style.display = 'block';
+  });
+</script>
+
+{% endblock %}

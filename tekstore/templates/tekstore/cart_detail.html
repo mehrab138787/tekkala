@@ -1,0 +1,191 @@
+{% extends "tekstore/base_generic.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="cart-container">
+    <h2 class="cart-header">سبد خرید شما</h2>
+
+    {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>نام محصول</th>
+                    <th>تعداد</th>
+                    <th>قیمت واحد</th>
+                    <th>جمع</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price|floatformat:0 }} تومان</td>
+                    <td>{{ item.subtotal|floatformat:0 }} تومان</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <h3>جمع کل: {{ total_price|floatformat:0 }} تومان</h3>
+            <a href="{% url 'checkout' %}" class="checkout-btn">ادامه خرید</a>
+        </div>
+    {% else %}
+        <!-- سبد خرید خالی -->
+        <div class="empty-cart">
+            <!-- آیکن FontAwesome -->
+            <i class="fas fa-cart-plus"></i>
+            <p>سبد خرید شما خالی است</p>
+            <p>هنوز هیچ محصولی به سبد خرید اضافه نکرده‌اید.</p>
+            <a href="{% url 'product_list' %}" class="start-shopping">شروع خرید</a>
+        </div>
+    {% endif %}
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @keyframes scale-up {
+        0% {
+            transform: scale(0.8);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .cart-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .cart-header {
+        font-size: 32px;
+        color: #333;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 40px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 40px;
+        background: #f8f8f8;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .cart-table th, .cart-table td {
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #ddd;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .cart-summary {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .cart-summary h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .checkout-btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background: #0073bc;
+        color: #fff;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 5px 15px rgba(0, 123, 188, 0.2);
+        transition: all 0.3s ease;
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .checkout-btn:hover {
+        background: #005a8c;
+        box-shadow: 0 10px 20px rgba(0, 123, 188, 0.3);
+    }
+
+    .empty-cart {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 400px;
+        text-align: center;
+        background: #f4f4f4;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+        padding: 20px;
+        position: relative;
+        animation: scale-up 0.5s ease-out;
+    }
+
+    .empty-cart i {
+        font-size: 100px;
+        color: #aaa;
+        animation: bounce 1.5s infinite;
+    }
+
+    .empty-cart p {
+        font-size: 20px;
+        color: #555;
+        margin-top: 15px;
+        font-weight: 600;
+   
+}
+
+    .empty-cart .start-shopping {
+        display: inline-block;
+        padding: 15px 30px;
+        background: #888;
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        margin-top: 30px;
+        transition: all 0.3s ease;
+        letter-spacing: 1px;
+    }
+
+    .empty-cart .start-shopping:hover {
+        background-color: #555;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .empty-cart .start-shopping:active {
+        background-color: #444;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'tekstore/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    background-color: #f2f3f5; /* پس‌زمینه خاکستری روشن */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* قالب اصلی درخواست همکاری */
+  .cooperation-container {
+    max-width: 650px;
+    margin: 100px auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+    position: relative;
+    animation: fadeInUp 1s ease-out;
+    border: 1px solid #e1e1e1;
+  }
+
+  /* انیمیشن ظاهر شدن */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .cooperation-container h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+  }
+
+  .cooperation-container p {
+    font-size: 16px;
+    color: #777;
+    margin-bottom: 35px;
+    line-height: 1.5;
+  }
+
+  /* استایل فیلدهای فرم */
+  .cooperation-container form input, 
+  .cooperation-container form textarea {
+    width: 100%;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+  }
+
+  .cooperation-container form input:focus, 
+  .cooperation-container form textarea:focus {
+    outline: none;
+    border-color: #4a90e2;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+  }
+
+  /* دکمه ارسال درخواست */
+  .cooperation-container form button {
+    background-color: #777; /* خاکستری تیره */
+    color: white;
+    padding: 16px;
+    border: none;
+    font-size: 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    text-transform: uppercase;
+  }
+
+  .cooperation-container form button:hover {
+    background-color: #4a90e2; /* آبی تیره */
+    transform: scale(1.05);
+  }
+
+  /* استایل پیام موفقیت */
+  .success-message {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  /* آیکون موفقیت */
+  .icon {
+    font-size: 50px;
+    margin-top: 20px;
+    color: #4a90e2;
+  }
+
+  /* استایل برای حالت موبایل */
+  @media (max-width: 768px) {
+    .cooperation-container {
+      padding: 30px;
+      margin: 50px 20px;
+    }
+
+    .cooperation-container h2 {
+      font-size: 28px;
+    }
+
+    .cooperation-container form input, 
+    .cooperation-container form textarea {
+      padding: 14px 18px;
+      font-size: 15px;
+    }
+  }
+</style>
+
+<div class="cooperation-container">
+  <h2>درخواست همکاری</h2>
+  <p>برای درخواست همکاری با ما، لطفاً فرم زیر را تکمیل کنید. تیم ما به زودی با شما تماس خواهد گرفت.</p>
+
+  <!-- فرم درخواست همکاری -->
+  <form method="POST" action="{% url 'cooperation_request' %}">
+    {% csrf_token %}
+    <input type="text" name="phone" placeholder="شماره موبایل شما" required>
+    <input type="text" name="products" placeholder="محصولاتی که ارائه می‌دهید" required>
+    <textarea name="details" rows="5" placeholder="توضیحات بیشتر..." required></textarea>
+    <button type="submit">ارسال درخواست</button>
+  </form>
+
+  <!-- پیام موفقیت ارسال درخواست -->
+  {% if request.POST %}
+    <div class="success-message">
+      درخواست همکاری شما با موفقیت ارسال شد. تیم ما به زودی با شما تماس خواهد گرفت.
+    </div>
+  {% endif %}
+
+  <!-- آیکون تایید موفقیت -->
+  <div class="icon">
+    <i class="fa fa-check-circle"></i>
+  </div>
+</div>
+
+{% endblock %}
