@@ -7,8 +7,12 @@ SECRET_KEY = "django-insecure-f$y%%&0*cy3lzbl7q*0f%=fkwzwj(6g0dnp%*@l6#h3y%ayebv
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '192.168.1.106', '192.168.179.138', '192.168.179.190',
-    'localhost', '127.0.0.1'
+    'localhost',
+    '127.0.0.1',
+    '192.168.1.106',
+    '192.168.179.138',
+    '192.168.179.190',
+    'tekkala-8.onrender.com',  # ✅ دامنه Render رو اضافه کن
 ]
 
 INSTALLED_APPS = [
