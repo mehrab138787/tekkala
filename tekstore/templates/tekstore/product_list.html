@@ -7,7 +7,7 @@
 <div class="container">
     <div class="search-box">
         <form method="get" action="{% url 'product_search' %}">
-            <input type="text" name="q" placeholder="نام محصول مورد نظر را وارد کنید...">
+            <input type="text" name="q" placeholder="نام بازی مورد نظر را وارد کنید...">
             <button type="submit">جستجو</button>
         </form>
     </div>
@@ -32,7 +32,7 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="no-results">محصولی پیدا نشد.</p>
+        <p class="no-results">بازی ای پیدا نشد.</p>
     {% endif %}
 </div>
 

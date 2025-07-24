@@ -1,7 +1,7 @@
 {% extends 'tekstore/base.html' %}
 {% load static %}
 
-{% block title %}صفحه اصلی | تک‌کالا{% endblock %}
+{% block title %}صفحه اصلی | بازیتو{% endblock %}
 
 {% block content %}
 
@@ -122,7 +122,7 @@
       inset 0 -4px 8px rgba(255,255,255,0.75);
   }
 
-  /* بخش محصولات */
+  /* بخش بازی ها */
   .products-section {
     margin-top: 0;
   }
@@ -137,7 +137,7 @@
     text-shadow: 0 2px 6px rgba(0,0,0,0.06);
   }
 
-  /* اسلایدر محصولات */
+  /* اسلایدر بازی ها */
   .product-slider {
     display: flex;
     gap: 2rem;
@@ -300,14 +300,14 @@
 </style>
 
 <div class="container hero" id="hero-section">
-  <h1>به تک‌کالا خوش آمدید</h1>
-  <p>جدیدترین و بهترین محصولات دیجیتال را با بهترین کیفیت و قیمت مناسب خریداری کنید.</p>
-  <button class="btn-custom" onclick="location.href='{% url 'product_list' %}'">مشاهده همه محصولات</button>
+  <h1>به بازیتو خوش آمدید</h1>
+  <p>تجربه بهترین بازی ها با رزرو انلاین در سراسر کشور با بازیتو.</p>
+  <button class="btn-custom" onclick="location.href='{% url 'product_list' %}'">مشاهده همه بازی ها</button>
 </div>
 
 <div class="container products-section">
-  <h2>محصولات ویژه</h2>
-  <div class="product-slider" aria-label="محصولات ویژه">
+  <h2>بازی های محبوب</h2>
+  <div class="product-slider" aria-label="بازی های محبوب">
     {% for product in products %}
     <div>
       <article class="product-card" tabindex="0" aria-labelledby="title-{{ product.pk }}" aria-describedby="desc-{{ product.pk }}">

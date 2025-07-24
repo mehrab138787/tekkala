@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>{% block title %}فروشگاه آنلاین{% endblock %}</title>
+  <title>{% block title %}مرجع رزرو آنلاین بازی{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
   <style>
     * {
@@ -293,7 +293,7 @@
       <li><a href="{% url 'product_list' %}">محصولات</a></li>
       <li><a href="{% url 'profile' %}">پروفایل</a></li>
       <li><a href="{% url 'auth' %}">ورود / ثبت‌نام</a></li>
-      <li class="cart-btn" id="cartToggle" aria-label="سبد خرید" role="button" tabindex="0">
+      <li class="cart-btn" id="cartToggle" aria-label="سبد رزرو" role="button" tabindex="0">
         🛒<span class="cart-count">{{ cart_items|length }}</span>
       </li>
     </ul>
@@ -301,8 +301,8 @@
 </header>
 
 <aside class="slide-cart" id="slideCart" aria-hidden="true">
-  <button class="close-cart" id="cartClose" aria-label="بستن سبد خرید">&times;</button>
-  <h3>سبد خرید شما</h3>
+  <button class="close-cart" id="cartClose" aria-label="بستن سبد رزرو">&times;</button>
+  <h3>سبد رزرو شما</h3>
   <div class="cart-items">
     {% for item in cart_items %}
     <div class="cart-item" data-id="{{ item.product.id }}">

@@ -137,7 +137,7 @@
   <form method="POST" action="{% url 'cooperation_request' %}">
     {% csrf_token %}
     <input type="text" name="phone" placeholder="شماره موبایل شما" required>
-    <input type="text" name="products" placeholder="محصولاتی که ارائه می‌دهید" required>
+    <input type="text" name="products" placeholder="بازی شما" required>
     <textarea name="details" rows="5" placeholder="توضیحات بیشتر..." required></textarea>
     <button type="submit">ارسال درخواست</button>
   </form>

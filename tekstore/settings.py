@@ -3,8 +3,9 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-f$y%%&0*cy3lzbl7q*0f%=fkwzwj(6g0dnp%*@l6#h3y%ayebv"
-DEBUG = True
+# کلید امنیتی و دیباگ از متغیر محیطی بخونه (برای امنیت بهتر در سرور)
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-f$y%%&0*cy3lzbl7q*0f%=fkwzwj(6g0dnp%*@l6#h3y%ayebv")
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -12,7 +13,7 @@ ALLOWED_HOSTS = [
     '192.168.1.106',
     '192.168.179.138',
     '192.168.179.190',
-    'tekkala-8.onrender.com',  # ✅ دامنه Render رو اضافه کن
+    'tekkala-8.onrender.com',  # ✅ آدرس سایت روی Render
 ]
 
 INSTALLED_APPS = [
@@ -27,12 +28,10 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django.contrib.humanize",
 
-    # احراز هویت دو مرحله‌ای
     "django_otp",
     "django_otp.plugins.otp_static",
     "two_factor",
 
-    # WebSocket
     "channels",
 ]
 
@@ -57,6 +56,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -87,7 +87,7 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -96,9 +96,9 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# ✅ تنظیمات Channel Layers برای WebSocket
+# ✅ تنظیمات Channels
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # می‌تونی بعداً Redis بزاری اینجا
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }

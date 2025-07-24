@@ -164,10 +164,10 @@
     </div>
 
     <!-- نمایش دسته‌بندی جاری -->
-    <h1>محصولات دسته‌بندی: {{ category.name }}</h1>
+    <h1>بازی های دسته‌بندی: {{ category.name }}</h1>
     <p>{{ category.description }}</p>
 
-    <!-- لیست محصولات -->
+    <!-- لیست بازی ها -->
     <div class="product-list">
         <ul>
             {% for product in products %}
@@ -178,7 +178,7 @@
                 <p>{{ product.price }} تومان</p>
             </li>
             {% empty %}
-            <li>هیچ محصولی در این دسته‌بندی وجود ندارد.</li>
+            <li>هیچ بازی ای در این دسته‌بندی وجود ندارد.</li>
             {% endfor %}
         </ul>
     </div>

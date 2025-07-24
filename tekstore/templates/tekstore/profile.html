@@ -2,7 +2,7 @@
 {% load static %}
 {% load humanize %}
 
-{% block title %}پروفایل کاربری - تک‌کالا{% endblock %}
+{% block title %}پروفایل کاربری - بازیتو{% endblock %}
 
 {% block content %}
 <style>
@@ -51,7 +51,7 @@
   margin-bottom: 30px;
 }
 
-/* محصولات مورد علاقه */
+/* بازی های مورد علاقه */
 .favorites-container {
   margin-bottom: 30px;
 }
@@ -302,10 +302,10 @@
   <div class="username">{{ user.username }}</div>
   <div class="join-date">عضو شده در {{ user.date_joined|date:"Y/m/d" }}</div>
 
-  <!-- محصولات مورد علاقه -->
+  <!-- بازی های مورد علاقه -->
   <div class="favorites-container">
     <div class="favorites-header" id="favoritesToggle">
-      <span>❤️ محصولات مورد علاقه شما</span>
+      <span>❤️ بازی های مورد علاقه شما</span>
       <span class="favorites-icon" id="favoritesIcon">⌄</span>
     </div>
     <div class="favorites-content" id="favoritesContent">
@@ -319,25 +319,25 @@
           {% endfor %}
         </div>
       {% else %}
-        <p class="text-muted" style="padding: 10px; color: #777;">شما هنوز محصولی را به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
+        <p class="text-muted" style="padding: 10px; color: #777;">شما هنوز بازی ای را به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
       {% endif %}
     </div>
   </div>
 
-  <!-- آمار سفارشات -->
+  <!-- آمار رزرو ها -->
   <div class="accordion mb-4" id="ordersStatsAccordion">
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingOrdersStats">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrdersStats" aria-expanded="true" aria-controls="collapseOrdersStats">
-          🛒 آمار سفارشات
+          🛒 آمار رزرو ها
         </button>
       </h2>
       <div id="collapseOrdersStats" class="accordion-collapse collapse show" aria-labelledby="headingOrdersStats" data-bs-parent="#ordersStatsAccordion">
         <div class="accordion-body">
           <div class="stats-container">
-            <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-title">تعداد سفارشات</div><div class="stat-value">{{ total_orders }}</div></div>
-            <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-title">مجموع هزینه سفارش‌ها</div><div class="stat-value">{{ total_cost|intcomma }} تومان</div></div>
-            <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-title">تعداد کالاهای خریداری‌شده</div><div class="stat-value">{{ total_items }}</div></div>
+            <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-title">تعداد رزرو ها</div><div class="stat-value">{{ total_orders }}</div></div>
+            <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-title">مجموع هزینه رزرو ها</div><div class="stat-value">{{ total_cost|intcomma }} تومان</div></div>
+            <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-title">تعداد رزرو های خرید ‌شده</div><div class="stat-value">{{ total_items }}</div></div>
           </div>
         </div>
       </div>

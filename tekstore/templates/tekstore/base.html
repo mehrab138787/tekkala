@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>{% block title %}تک‌کالا | فروشگاه آنلاین{% endblock %}</title>
+  <title>{% block title %}بازیتو| مرحع رزرو آنلاین{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- فونت وزیر -->
@@ -266,16 +266,16 @@
   <!-- نوار بالا -->
   <nav class="navbar navbar-expand-lg navbar-dark" role="navigation" aria-label="منوی اصلی">
     <div class="container">
-      <a class="navbar-brand" href="{% url 'home' %}">تک‌کالا</a>
+      <a class="navbar-brand" href="{% url 'home' %}">بازیتو</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="تغییر منو">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">محصولات</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">بازی ها</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">ثبت‌نام</a></li>
         </ul>
-        <form class="d-flex" method="get" action="{% url 'product_search' %}" role="search" aria-label="جستجو در محصولات">
+        <form class="d-flex" method="get" action="{% url 'product_search' %}" role="search" aria-label="جستجو در بازی ها">
           <input class="form-control me-2" name="q" type="search" placeholder="جستجو..." aria-label="جستجو" />
           <button class="btn btn-outline-light" type="submit">جستجو</button>
         </form>
@@ -302,13 +302,13 @@
       <i class="bi bi-house-door"></i>
       <span>خانه</span>
     </a>
-    <a href="{% url 'category_list' %}" aria-label="دسته‌بندی" tabindex="0">
+    <a href="{% url 'category_list' %}" aria-label=" دسته‌بندی " tabindex="0">
       <i class="bi bi-list-ul"></i>
       <span>دسته‌بندی</span>
     </a>
-    <a href="{% url 'cart_detail' %}" aria-label="سبد خرید" tabindex="0">
+    <a href="{% url 'cart_detail' %}" aria-label="سبد رزرو" tabindex="0">
       <i class="bi bi-cart4"></i>
-      <span>سبد خرید</span>
+      <span>سبد رزرو</span>
     </a>
   </nav>
 

@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="cart-container">
-    <h2 class="cart-header">سبد خرید شما</h2>
+    <h2 class="cart-header">سبد بازی شما</h2>
 
     {% if cart_items %}
         <table class="cart-table">
             <thead>
                 <tr>
-                    <th>نام محصول</th>
+                    <th>نام بازی</th>
                     <th>تعداد</th>
                     <th>قیمت واحد</th>
                     <th>جمع</th>
@@ -33,13 +33,13 @@
             <a href="{% url 'checkout' %}" class="checkout-btn">ادامه خرید</a>
         </div>
     {% else %}
-        <!-- سبد خرید خالی -->
+        <!-- سبد رزرو خالی -->
         <div class="empty-cart">
             <!-- آیکن FontAwesome -->
             <i class="fas fa-cart-plus"></i>
-            <p>سبد خرید شما خالی است</p>
-            <p>هنوز هیچ محصولی به سبد خرید اضافه نکرده‌اید.</p>
-            <a href="{% url 'product_list' %}" class="start-shopping">شروع خرید</a>
+            <p>سبد رزرو شما خالی است</p>
+            <p>هنوز هیچ بازی ای به سبد رزرواضافه نکرده‌اید.</p>
+            <a href="{% url 'product_list' %}" class="start-shopping">شروع رزرو</a>
         </div>
     {% endif %}
 </div>
